@@ -1,0 +1,73 @@
+@startuml Диаграмма классов
+title Компонентная архитектура пошаговой симуляции битвы
+
+package "Game Core" {
+    class GameMap {
+        - width: int
+        - height: int
+        - units: List<Unit>
+        + add_unit(unit: Unit)
+        + step()
+        + is_cell_free(x: int, y: int): bool
+        + find_nearest_enemy(unit: Unit): Unit
+    }
+
+    class GameEngine {
+        + run()
+        + is_battle_over(): bool
+    }
+}
+
+package "Units" {
+    abstract class Unit {
+        + id: int
+        + x: int
+        + y: int
+        + hp: int
+        + is_alive(): bool
+        + can_act(): bool
+        + take_turn(game: GameMap)
+        + move_towards(x, y, game)
+    }
+
+    class Swordsman {
+        + damage: int
+        + take_turn(game: GameMap)
+    }
+
+    Unit <|-- Swordsman
+}
+
+package "Behavior" {
+    class BehaviorStrategy <<interface>> {
+        + decide_action(unit: Unit, game: GameMap)
+    }
+    class Swordsman implements BehaviorStrategy
+}
+
+package "Logging" {
+    class EventLog {
+        + log(message: str)
+    }
+}
+
+GameEngine --> GameMap : управляет
+GameMap --> Unit : содержит
+Unit --> BehaviorStrategy : делегирует поведение
+Swordsman ..> EventLog : логирует действия
+
+note right of GameEngine
+  GameEngine вызывает map.step(),
+  инициируя ход всех юнитов.
+end note
+
+note right of Unit
+  Юниты не знают о GameEngine,
+  работают через GameMap.
+end note
+
+note left of Unit
+  реализует take_turn через паттерн "шаблонный метод"
+end note
+
+@enduml

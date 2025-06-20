@@ -1,0 +1,44 @@
+@startuml relations
+title Связи между классами
+
+class GameEngine {
+    + create_map()
+    + set_unit_on_map()
+}
+
+class GameMap {
+    + add_unit()
+    + step()
+}
+
+class Unit {
+    + take_turn(game)
+    + move_towards()
+}
+
+class Swordsman {
+    + damage
+    + take_turn(game)
+}
+
+class BehaviorStrategy {
+    + decide_action()
+}
+
+class SwordsmanBehavior {
+    + decide_action()
+}
+
+class EventLog {
+    + log()
+}
+
+GameEngine --> GameMap : управляет
+GameEngine --> Unit : Создаёт через паттерн фабрика
+GameMap o-- "*" Unit : содержит
+Unit <|-- Swordsman
+Unit --> BehaviorStrategy : стратегия поведения
+Swordsman --> EventLog : пишет события
+SwordsmanBehavior ..|> BehaviorStrategy
+
+@enduml

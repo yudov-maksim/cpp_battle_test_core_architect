@@ -1,0 +1,35 @@
+@startuml components
+title Модули/подсистемы и их ответственность
+
+component "Initializer" as Initializer
+component "GameMap" as Map
+component "GameEngine" as Engine
+component "Unit + Subclasses" as Units
+component "BehaviorStrategy" as AI
+component "EventLog" as Log
+
+Initializer --> Engine : инициализирует
+Engine --> Map : управляет
+Map --> Units : содержит
+Units --> AI : использует
+Units --> Log : оповещает
+
+note right of Units
+  Расширяемые классы юнитов
+  (мечник, охотник, лекарь,..)
+end note
+
+note left of AI
+  Поведение по шаблону "Стратегия":
+  - ближний бой
+  - дальний бой
+  - лечение
+  - ...
+end note
+
+note right of Log
+  Через паттерн Наблюдатель оповещает о событии
+      EventLog сам логирует
+end note
+
+@enduml
